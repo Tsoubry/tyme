@@ -1,0 +1,5 @@
+.zcompdump*
+kubectl
+
+/target
+/public
