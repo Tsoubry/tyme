@@ -1,0 +1,29 @@
+[package]
+name = "tyme"
+version = "1.0.0"
+edition = "2021"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+yew = { version = "0.19.3" }
+js-sys = "0.3"
+gloo = "0.6" # todo: use smaller like gloo_utils, gloo_console,...
+wasm-bindgen = "0.2"
+
+[dependencies.web-sys]
+version = "0.3"
+features = [
+        "Document",
+        "HtmlInputElement", 
+        "Event", 
+        "MouseEvent",
+        "HtmlMediaElement",
+        "HtmlLinkElement",
+    ] 
+
+
+[profile.release]
+lto = true
+opt-level = 's'  # use option z for even smaller wasm file sizes

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <link rel="manifest" href="manifest.json">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" type="image/svg" sizes="32x32" href="clock-time-nine-outline.svg">
+
+    <link rel="stylesheet" href="static/css/bulma.min.css">
+    <link rel="stylesheet" href="static/css/all.min.css">
+    <link data-trunk rel="sass" href="static-files/static/css/custom.sass">
+
+    <link data-trunk rel="copy-dir" href="static-files/static">
+    <link data-trunk rel="copy-file" href="static-files/manifest.json">
+    <link data-trunk rel="copy-file" href="static-files/clock-time-nine-outline.svg">
+    <link data-trunk rel="copy-file" href="static-files/static/kitchen-timer-ding.mp3">
+
+    <title>Tyme</title>
+</head>
+<body>
+
+    <div class="columns is-centered">
+
+        <div class="column is-half">
+            <div class="stopwatch-app"></div>
+        </div>
+
+    </div>
+
+    <div class="columns is-centered">
+
+        <div class="column is-half">
+            <div class="timer-app"></div>
+        </div>
+
+    </div>
+
+    <audio controls id="alarm-sound" hidden>
+        <source src="kitchen-timer-ding.mp3" type="audio/mpeg">
+    </audio>
+    
+</body>
+</html>

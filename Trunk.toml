@@ -1,0 +1,21 @@
+[build]
+target = "index.html"
+# Build in release mode.
+release = true
+# The output dir for all final assets.
+dist = "public"
+# The public URL from which assets are to be served.
+public_url = "/"
+
+[watch]
+# Paths to watch, defaults to build target parent folder.
+path = ["src"]
+# Paths to ignore.
+ignore = []
+
+[serve]
+target = "index.html"
+port = 5500
+# Open a browser tab once the initial build is complete.
+open = false
+release = false

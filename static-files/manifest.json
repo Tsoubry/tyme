@@ -1,0 +1,15 @@
+{
+    "name": "Tyme",
+    "short_name": "Tyme",
+    "icons": [{
+      "src": "/clock-time-nine-outline.svg",
+        "type": "image/svg+xml",
+        "sizes": "any"
+      }],
+    "lang": "en-US",
+    "start_url": "/index.html?source=pwa",
+    "display": "standalone",
+    "background_color": "white",
+    "theme_color": "white",
+    "description": "A kitchen stopwatch and timer to be integrated in Home Assistant."
+  }
