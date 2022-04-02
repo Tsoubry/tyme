@@ -16,4 +16,4 @@ FROM svenstaro/miniserve:alpine
 COPY --from=builder /home/rust/src/public public
 USER 1000:1000
 EXPOSE 8080
-ENTRYPOINT ["/app/miniserve", "public", "--index", "index.html", "--spa"]
+ENTRYPOINT ["/app/miniserve", "public", "--index", "index.html", "--spa", "-i", "0.0.0.0"]

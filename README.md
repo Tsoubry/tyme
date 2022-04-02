@@ -1,6 +1,6 @@
 # Tyme
 
-A simple stopwatch and timer built with the Yew framework in Rust.
+A simple stopwatch and timer app built with the Yew framework in Rust.
 
 # Screenshot
 ![Screenshot](tyme_screenshot.png)
