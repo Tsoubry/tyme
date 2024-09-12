@@ -1,21 +1,21 @@
-use gloo::{
-    timers::callback::{Interval},
-};
+use gloo::timers::callback::Interval;
 
-use gloo::console::{log};
+use gloo::console::log;
 
 use wasm_bindgen::JsCast;
 
-use yew::{html, Component, Context, Html};
+use web_sys::{EventTarget, HtmlInputElement, HtmlLinkElement, MouseEvent};
 use yew::events::Event;
-use web_sys::{EventTarget, HtmlInputElement, MouseEvent, HtmlLinkElement};
+use yew::{html, Component, Context, Html};
 
-use crate::utils::{format_time, from_full_time, TimeLevel, play_sound, stop_sound};
-use crate::utils::{ALL_SECONDS, ALL_HOURS, ALL_MINUTES, ADD_SECONDS, ADD_MINUTES, ADD_HOURS, LINK_MINUTES_1, LINK_MINUTES_2, LINK_HOURS};
+use crate::utils::{format_time, from_full_time, play_sound, stop_sound, TimeLevel};
+use crate::utils::{
+    ADD_HOURS, ADD_MINUTES, ADD_SECONDS, ALL_HOURS, ALL_MINUTES, ALL_SECONDS, LINK_HOURS,
+    LINK_MINUTES_1, LINK_MINUTES_2,
+};
 
 use crate::selects::Selector;
-use crate::time_links::{SetTime, AddTime};
-
+use crate::time_links::{AddTime, SetTime};
 
 pub enum Msg {
     SetSelectorTimer(usize, TimeLevel),
@@ -57,7 +57,8 @@ impl Timer {
     }
 
     fn set_total_seconds(&mut self) {
-        let total_seconds = self.hour_selector * 3600 + self.minute_selector * 60 + self.second_selector;
+        let total_seconds =
+            self.hour_selector * 3600 + self.minute_selector * 60 + self.second_selector;
         self.start_seconds = total_seconds;
         self.seconds = total_seconds;
     }
@@ -91,7 +92,7 @@ impl Component for Timer {
                     TimeLevel::Hour => self.hour_selector = value,
                 }
                 self.set_total_seconds();
-            },
+            }
             Msg::ShortCutTimer(value, time_level) => {
                 self.reset();
                 match time_level {
@@ -100,7 +101,7 @@ impl Component for Timer {
                     TimeLevel::Hour => self.hour_selector = value,
                 }
                 self.set_total_seconds();
-            },
+            }
             Msg::AddTime(value, time_level) => {
                 self.set_timer_0();
                 match time_level {
@@ -109,7 +110,7 @@ impl Component for Timer {
                     TimeLevel::Hour => self.hour_selector += value,
                 }
                 self.set_total_seconds();
-            },
+            }
             Msg::StartTimer => {
                 if self.seconds > 0 {
                     let clock_handle = {
@@ -121,7 +122,8 @@ impl Component for Timer {
             }
             Msg::UpdateTime => {
                 self.seconds -= 1;
-                self.progress = (self.seconds as f64 / self.start_seconds as f64 * 100.0).round() as usize;
+                self.progress =
+                    (self.seconds as f64 / self.start_seconds as f64 * 100.0).round() as usize;
                 if self.seconds == 0 {
                     self.timer.take();
                     self.finished = true;
@@ -143,8 +145,6 @@ impl Component for Timer {
                     self.progress = 100;
                     self.reset_clicked = true;
                 }
-
-                
             }
         }
         true
@@ -155,39 +155,50 @@ impl Component for Timer {
         let no_seconds = self.seconds == 0;
 
         let on_change = ctx.link().callback(|e: Event| {
-            let target: EventTarget = e.target().expect("Event should have a target when dispatched");
+            let target: EventTarget = e
+                .target()
+                .expect("Event should have a target when dispatched");
 
             let time_string = target.unchecked_into::<HtmlInputElement>().value();
             log!("selecting", &time_string);
 
-            let (value, time_level) = from_full_time(&time_string).unwrap_or((0, TimeLevel::Second));
+            let (value, time_level) =
+                from_full_time(&time_string).unwrap_or((0, TimeLevel::Second));
 
             Msg::SetSelectorTimer(value, time_level)
         });
 
         let on_click = ctx.link().callback(|e: MouseEvent| {
-            let target: EventTarget = e.target().expect("Event should have a target when dispatched");
+            let target: EventTarget = e
+                .target()
+                .expect("Event should have a target when dispatched");
 
             let time_string = target.unchecked_into::<HtmlLinkElement>().id();
             log!("selecting", &time_string);
 
-            let (value, time_level) = from_full_time(&time_string).unwrap_or((0, TimeLevel::Second));
+            let (value, time_level) =
+                from_full_time(&time_string).unwrap_or((0, TimeLevel::Second));
 
             Msg::ShortCutTimer(value, time_level)
         });
 
         let on_click_add = ctx.link().callback(|e: MouseEvent| {
-            let target: EventTarget = e.target().expect("Event should have a target when dispatched");
+            let target: EventTarget = e
+                .target()
+                .expect("Event should have a target when dispatched");
 
             let time_string = target.unchecked_into::<HtmlLinkElement>().id();
             log!("adding", &time_string);
 
-            let (value, time_level) = from_full_time(&time_string).unwrap_or((0, TimeLevel::Second));
+            let (value, time_level) =
+                from_full_time(&time_string).unwrap_or((0, TimeLevel::Second));
 
             Msg::AddTime(value, time_level)
         });
 
-        if self.finished {play_sound()};
+        if self.finished {
+            play_sound()
+        };
 
         html! {
             <>
@@ -234,19 +245,19 @@ impl Component for Timer {
                     </div>
 
                     <div class="columns">
-                        <div class="column has-text-centered"> 
+                        <div class="column has-text-centered">
                             <SetTime values={LINK_MINUTES_1} time_level={TimeLevel::Minute} cb={on_click.clone()} />
 
                         </div>
-                        <div class="column has-text-centered"> 
+                        <div class="column has-text-centered">
                             <SetTime values={LINK_MINUTES_2} time_level={TimeLevel::Minute} cb={on_click.clone()} />
 
                         </div>
-                        <div class="column has-text-centered"> 
+                        <div class="column has-text-centered">
                             <SetTime values={LINK_HOURS} time_level={TimeLevel::Hour} cb={on_click} />
                         </div>
 
-                        <div class="column has-text-centered"> 
+                        <div class="column has-text-centered">
                             <AddTime values={ADD_SECONDS} time_level={TimeLevel::Second} cb={on_click_add.clone()} />
                             <AddTime values={ADD_MINUTES} time_level={TimeLevel::Minute} cb={on_click_add.clone()} />
                             <AddTime values={ADD_HOURS} time_level={TimeLevel::Hour} cb={on_click_add} />

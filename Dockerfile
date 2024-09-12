@@ -1,4 +1,4 @@
-FROM rust as builder
+FROM docker.io/rust as builder
 
 WORKDIR /home/rust/src
 
@@ -12,8 +12,8 @@ COPY . .
 RUN trunk build
 
 
-FROM svenstaro/miniserve:alpine
+FROM docker.io/svenstaro/miniserve:alpine
 COPY --from=builder /home/rust/src/public public
 USER 1000:1000
-EXPOSE 8080
-ENTRYPOINT ["/app/miniserve", "public", "--index", "index.html", "--spa", "-i", "0.0.0.0"]
+EXPOSE 443
+ENTRYPOINT ["/app/miniserve", "public", "--index", "index.html", "--spa", "-i", "::", "-p", "443", "-t", "Tyme"]

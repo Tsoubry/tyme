@@ -1,6 +1,4 @@
-use gloo::{
-    timers::callback::{Interval},
-};
+use gloo::timers::callback::Interval;
 use yew::{html, Component, Context, Html};
 
 use crate::utils::format_time;
@@ -89,5 +87,3 @@ impl Component for StopWatch {
         }
     }
 }
-
-

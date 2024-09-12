@@ -13,16 +13,20 @@ pub struct Props {
 
 #[function_component(Selector)]
 pub fn selector(props: &Props) -> Html {
+    let Props {
+        values,
+        time_level,
+        cb,
+        value_selected,
+    } = props.clone();
 
-    let Props { values, time_level, cb, value_selected } = props.clone();
-
-    html! { 
+    html! {
 
         <div class="field">
             <label class="label center-grid">{&time_level.to_string()}</label>
             <div class="control">
                 <div class="select">
-                    <select onchange={cb}> 
+                    <select onchange={cb}>
                         { for values.iter().map(|v| {
                             html! { <option selected={value_selected == *v} value={to_full_time(*v, time_level)}>{v}</option> }
                         }) }

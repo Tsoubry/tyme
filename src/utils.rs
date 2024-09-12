@@ -4,18 +4,23 @@ use gloo::utils as gloo_utils;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlMediaElement;
 
-pub const ALL_SECONDS: &'static [usize] = &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59];
-pub const ALL_MINUTES: &'static [usize] = ALL_SECONDS;
-pub const ALL_HOURS: &'static [usize] = &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+pub const ALL_SECONDS: &[usize] = &[
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+    26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+    50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+];
+pub const ALL_MINUTES: &[usize] = ALL_SECONDS;
+pub const ALL_HOURS: &[usize] = &[
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+];
 
-pub const ADD_SECONDS: &'static [usize] = &[15, 30, 45];
-pub const ADD_MINUTES: &'static [usize] = &[1, 5, 10, 15, 30, 45];
-pub const ADD_HOURS: &'static [usize] = &[1, 2];
+pub const ADD_SECONDS: &[usize] = &[15, 30, 45];
+pub const ADD_MINUTES: &[usize] = &[1, 5, 10, 15, 30, 45];
+pub const ADD_HOURS: &[usize] = &[1, 2];
 
-pub const LINK_MINUTES_1: &'static [usize] = &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-pub const LINK_MINUTES_2: &'static [usize] = &[16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
-pub const LINK_HOURS: &'static [usize] = &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
+pub const LINK_MINUTES_1: &[usize] = &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+pub const LINK_MINUTES_2: &[usize] = &[16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
+pub const LINK_HOURS: &[usize] = &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 pub fn format_time(seconds: usize) -> String {
     let hours = seconds / 3600;
@@ -66,23 +71,20 @@ pub fn from_full_time(time: &str) -> Option<(usize, TimeLevel)> {
         (Some(value), Some(l)) if l.contains("hour") => Some((value, TimeLevel::Hour)),
         _ => None,
     }
-
 }
 
 pub fn play_sound() {
     let document = gloo_utils::document();
     let audio_element = document.get_element_by_id("alarm-sound").unwrap();
-    
+
     let audio = audio_element.dyn_into::<HtmlMediaElement>().unwrap();
     audio.play().ok();
-
 }
 
 pub fn stop_sound() {
     let document = gloo_utils::document();
     let audio_element = document.get_element_by_id("alarm-sound").unwrap();
-    
+
     let audio = audio_element.dyn_into::<HtmlMediaElement>().unwrap();
     audio.pause().ok();
-
 }

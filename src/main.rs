@@ -1,9 +1,8 @@
-
-mod stopwatch;
 mod countdown;
-mod utils;
 mod selects;
+mod stopwatch;
 mod time_links;
+mod utils;
 
 use gloo::utils as gloo_utils;
 
