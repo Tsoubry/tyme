@@ -8,12 +8,12 @@ readme = "README.md"
 
 [dependencies]
 yew = { version = "0.19.3" }
-js-sys = "0.3"
+js-sys = "0.3.77"
 gloo = "0.11" # todo: use smaller like gloo_utils, gloo_console,...
-wasm-bindgen = "0.2"
+wasm-bindgen = "0.2.100"
 
 [dependencies.web-sys]
-version = "0.3"
+version = "0.3.77"
 features = [
         "Document",
         "HtmlInputElement", 
