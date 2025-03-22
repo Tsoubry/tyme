@@ -10,8 +10,8 @@ fn main() {
     let document = gloo_utils::document();
 
     let stopwatch_element = document.query_selector(".stopwatch-app").unwrap().unwrap();
-    yew::start_app_in_element::<stopwatch::StopWatch>(stopwatch_element);
+    yew::Renderer::<stopwatch::StopWatch>::with_root(stopwatch_element).render();
 
     let timer_element = document.query_selector(".timer-app").unwrap().unwrap();
-    yew::start_app_in_element::<countdown::Timer>(timer_element);
+    yew::Renderer::<countdown::Timer>::with_root(timer_element).render();
 }
