@@ -1,7 +1,7 @@
 use web_sys::MouseEvent;
 use yew::prelude::*;
 
-use crate::utils::{to_full_time, TimeLevel};
+use crate::utils::{TimeLevel, to_full_time};
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
@@ -12,11 +12,7 @@ pub struct Props {
 
 #[function_component(SetTime)]
 pub fn set_time(props: &Props) -> Html {
-    let Props {
-        values,
-        time_level,
-        cb,
-    } = props.clone();
+    let Props { values, time_level, cb } = props.clone();
 
     html! {
                     { for values.iter().map(|v| {
@@ -37,11 +33,7 @@ pub fn set_time(props: &Props) -> Html {
 
 #[function_component(AddTime)]
 pub fn add_time(props: &Props) -> Html {
-    let Props {
-        values,
-        time_level,
-        cb,
-    } = props.clone();
+    let Props { values, time_level, cb } = props.clone();
 
     html! {
 

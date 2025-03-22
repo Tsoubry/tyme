@@ -1,7 +1,7 @@
 use web_sys::Event;
 use yew::prelude::*;
 
-use crate::utils::{to_full_time, TimeLevel};
+use crate::utils::{TimeLevel, to_full_time};
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {

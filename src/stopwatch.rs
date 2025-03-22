@@ -1,5 +1,5 @@
 use gloo::timers::callback::Interval;
-use yew::{html, Component, Context, Html};
+use yew::{Component, Context, Html, html};
 
 use crate::utils::format_time;
 
