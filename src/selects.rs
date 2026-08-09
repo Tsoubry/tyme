@@ -28,7 +28,7 @@ pub fn selector(props: &Props) -> Html {
                 <div class="select">
                     <select onchange={cb}>
                         { for values.iter().map(|v| {
-                            html! { <option selected={value_selected == *v} value={to_full_time(*v, time_level)}>{v}</option> }
+                            html! { <option selected={value_selected == *v} value={to_full_time(*v, time_level)}>{*v}</option> }
                         }) }
                     </select>
                 </div>
