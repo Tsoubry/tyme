@@ -1,5 +1,5 @@
 use gloo::{console::log, timers::callback::Interval};
-use wasm_bindgen::JsCast;
+use wasm_bindgen::JsCast as _;
 use web_sys::{EventTarget, HtmlInputElement, HtmlLinkElement, MouseEvent};
 use yew::{Component, Context, Html, events::Event, html};
 
@@ -13,34 +13,28 @@ use crate::{
 };
 
 pub enum Msg {
-    SetSelectorTimer(usize, TimeLevel),
-    ShortCutTimer(usize, TimeLevel),
     AddTime(usize, TimeLevel),
-    StartTimer,
-    UpdateTime,
     PauseTimer,
     ResetTimer,
+    SetSelectorTimer(usize, TimeLevel),
+    ShortCutTimer(usize, TimeLevel),
+    StartTimer,
+    UpdateTime,
 }
 
 pub struct Timer {
-    start_seconds: usize,
-    seconds: usize,
-    timer: Option<Interval>,
     finished: bool,
-    second_selector: usize,
-    minute_selector: usize,
     hour_selector: usize,
+    interval: Option<Interval>,
+    minute_selector: usize,
     progress: usize,
     reset_clicked: bool,
+    second_selector: usize,
+    seconds: usize,
+    start_seconds: usize,
 }
 
 impl Timer {
-    fn set_timer_0(&mut self) {
-        self.start_seconds = 0;
-        self.seconds = 0;
-        self.finished = false;
-    }
-
     fn reset(&mut self) {
         self.start_seconds = 0;
         self.seconds = 0;
@@ -49,6 +43,12 @@ impl Timer {
         self.minute_selector = 0;
         self.hour_selector = 0;
         self.progress = 100;
+    }
+
+    fn set_timer_0(&mut self) {
+        self.start_seconds = 0;
+        self.seconds = 0;
+        self.finished = false;
     }
 
     fn set_total_seconds(&mut self) {
@@ -64,15 +64,15 @@ impl Component for Timer {
 
     fn create(_: &Context<Self>) -> Self {
         Timer {
-            start_seconds: 0,
-            seconds: 0,
-            timer: None,
             finished: false,
-            second_selector: 0,
-            minute_selector: 0,
             hour_selector: 0,
+            interval: None,
+            minute_selector: 0,
             progress: 100,
             reset_clicked: false,
+            second_selector: 0,
+            seconds: 0,
+            start_seconds: 0,
         }
     }
 
@@ -111,19 +111,19 @@ impl Component for Timer {
                         let link = ctx.link().clone();
                         Interval::new(1000, move || link.send_message(Msg::UpdateTime))
                     };
-                    self.timer = Some(clock_handle);
+                    self.interval = Some(clock_handle);
                 }
             }
             Msg::UpdateTime => {
                 self.seconds -= 1;
-                self.progress = (self.seconds as f64 / self.start_seconds as f64 * 100.0).round() as usize;
+                self.progress = (self.seconds * 100 + self.start_seconds / 2) / self.start_seconds;
                 if self.seconds == 0 {
-                    self.timer.take();
+                    drop(self.interval.take());
                     self.finished = true;
                 }
             }
             Msg::PauseTimer => {
-                self.timer.take();
+                drop(self.interval.take());
             }
             Msg::ResetTimer => {
                 stop_sound();
@@ -133,7 +133,7 @@ impl Component for Timer {
                     self.reset_clicked = false;
                 } else {
                     self.seconds = self.start_seconds;
-                    self.timer = None;
+                    self.interval = None;
                     self.finished = false;
                     self.progress = 100;
                     self.reset_clicked = true;
@@ -144,45 +144,45 @@ impl Component for Timer {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let is_running = self.timer.is_some();
+        let is_running = self.interval.is_some();
         let no_seconds = self.seconds == 0;
 
-        let on_change = ctx.link().callback(|e: Event| {
-            let target: EventTarget = e.target().expect("Event should have a target when dispatched");
+        let on_change = ctx.link().batch_callback(|event: Event| {
+            let target: EventTarget = event.target()?;
 
             let time_string = target.unchecked_into::<HtmlInputElement>().value();
             log!("selecting", &time_string);
 
             let (value, time_level) = from_full_time(&time_string).unwrap_or((0, TimeLevel::Second));
 
-            Msg::SetSelectorTimer(value, time_level)
+            Some(Msg::SetSelectorTimer(value, time_level))
         });
 
-        let on_click = ctx.link().callback(|e: MouseEvent| {
-            let target: EventTarget = e.target().expect("Event should have a target when dispatched");
+        let on_click = ctx.link().batch_callback(|event: MouseEvent| {
+            let target: EventTarget = event.target()?;
 
             let time_string = target.unchecked_into::<HtmlLinkElement>().id();
             log!("selecting", &time_string);
 
             let (value, time_level) = from_full_time(&time_string).unwrap_or((0, TimeLevel::Second));
 
-            Msg::ShortCutTimer(value, time_level)
+            Some(Msg::ShortCutTimer(value, time_level))
         });
 
-        let on_click_add = ctx.link().callback(|e: MouseEvent| {
-            let target: EventTarget = e.target().expect("Event should have a target when dispatched");
+        let on_click_add = ctx.link().batch_callback(|event: MouseEvent| {
+            let target: EventTarget = event.target()?;
 
             let time_string = target.unchecked_into::<HtmlLinkElement>().id();
             log!("adding", &time_string);
 
             let (value, time_level) = from_full_time(&time_string).unwrap_or((0, TimeLevel::Second));
 
-            Msg::AddTime(value, time_level)
+            Some(Msg::AddTime(value, time_level))
         });
 
         if self.finished {
-            play_sound()
-        };
+            play_sound();
+        }
 
         html! {
             <>

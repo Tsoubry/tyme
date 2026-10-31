@@ -4,10 +4,10 @@ use yew::{Component, Context, Html, html};
 use crate::utils::format_time;
 
 pub enum Msg {
-    StartTimer,
-    UpdateTime,
     PauseTimer,
     ResetTimer,
+    StartTimer,
+    UpdateTime,
 }
 
 pub struct StopWatch {
@@ -39,7 +39,7 @@ impl Component for StopWatch {
                 self.seconds += 1;
             }
             Msg::PauseTimer => {
-                self.timer.take();
+                drop(self.timer.take());
             }
             Msg::ResetTimer => {
                 self.seconds = 0;
