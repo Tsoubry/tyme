@@ -1,7 +1,7 @@
-use std::fmt::Display;
+use std::fmt::{self, Display, Formatter};
 
-use gloo::utils as gloo_utils;
-use wasm_bindgen::JsCast;
+use gloo::{console::error, utils as gloo_utils};
+use wasm_bindgen::JsCast as _;
 use web_sys::HtmlMediaElement;
 
 pub const ALL_SECONDS: &[usize] = &[
@@ -21,14 +21,6 @@ pub const LINK_MINUTES_1: &[usize] = &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
 pub const LINK_MINUTES_2: &[usize] = &[16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
 pub const LINK_HOURS: &[usize] = &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-pub fn format_time(seconds: usize) -> String {
-    let hours = seconds / 3600;
-    let minutes = (seconds % 3600) / 60;
-    let seconds = seconds % 60;
-
-    format!("{:02}:{:02}:{:02}", hours, minutes, seconds)
-}
-
 #[derive(Clone, PartialEq, Copy)]
 pub enum TimeLevel {
     Hour,
@@ -37,53 +29,68 @@ pub enum TimeLevel {
 }
 
 impl Display for TimeLevel {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            TimeLevel::Hour => write!(f, "Hours"),
-            TimeLevel::Minute => write!(f, "Minutes"),
-            TimeLevel::Second => write!(f, "Seconds"),
+            TimeLevel::Hour => write!(formatter, "Hours"),
+            TimeLevel::Minute => write!(formatter, "Minutes"),
+            TimeLevel::Second => write!(formatter, "Seconds"),
         }
     }
 }
 
-pub fn to_full_time(value: usize, time_level: TimeLevel) -> String {
-    match time_level {
-        TimeLevel::Hour if value == 1 => format!("{} hour", value),
-        TimeLevel::Hour => format!("{} hours", value),
-        TimeLevel::Minute if value == 1 => format!("{} minute", value),
-        TimeLevel::Minute => format!("{} minutes", value),
-        TimeLevel::Second if value == 1 => format!("{} second", value),
-        TimeLevel::Second => format!("{} seconds", value),
-    }
+fn alarm_element() -> Option<HtmlMediaElement> {
+    gloo_utils::document()
+        .get_element_by_id("alarm-sound")?
+        .dyn_into::<HtmlMediaElement>()
+        .ok()
+}
+
+pub fn format_time(seconds: usize) -> String {
+    let hours = seconds / 3600;
+    let minutes = (seconds % 3600) / 60;
+    let secs = seconds % 60;
+
+    format!("{hours:02}:{minutes:02}:{secs:02}")
 }
 
 pub fn from_full_time(time: &str) -> Option<(usize, TimeLevel)> {
     let mut time_parts = time.split(' ');
 
-    let value = time_parts.next().unwrap().parse::<usize>().ok();
-    let time_level = time_parts.next();
+    let value = time_parts.next()?.parse::<usize>().ok()?;
+    let unit = time_parts.next()?;
 
-    match (value, time_level) {
-        (None, _) => None,
-        (Some(value), Some(l)) if l.contains("second") => Some((value, TimeLevel::Second)),
-        (Some(value), Some(l)) if l.contains("minute") => Some((value, TimeLevel::Minute)),
-        (Some(value), Some(l)) if l.contains("hour") => Some((value, TimeLevel::Hour)),
-        _ => None,
+    if unit.contains("second") {
+        Some((value, TimeLevel::Second))
+    } else if unit.contains("minute") {
+        Some((value, TimeLevel::Minute))
+    } else if unit.contains("hour") {
+        Some((value, TimeLevel::Hour))
+    } else {
+        None
     }
 }
 
 pub fn play_sound() {
-    let document = gloo_utils::document();
-    let audio_element = document.get_element_by_id("alarm-sound").unwrap();
-
-    let audio = audio_element.dyn_into::<HtmlMediaElement>().unwrap();
-    audio.play().ok();
+    if let Some(audio) = alarm_element() {
+        drop(audio.play().ok());
+    }
 }
 
 pub fn stop_sound() {
-    let document = gloo_utils::document();
-    let audio_element = document.get_element_by_id("alarm-sound").unwrap();
+    if let Some(audio) = alarm_element()
+        && let Err(err) = audio.pause()
+    {
+        error!("Failed to pause alarm", err);
+    }
+}
 
-    let audio = audio_element.dyn_into::<HtmlMediaElement>().unwrap();
-    audio.pause().ok();
+pub fn to_full_time(value: usize, time_level: TimeLevel) -> String {
+    match time_level {
+        TimeLevel::Hour if value == 1 => format!("{value} hour"),
+        TimeLevel::Hour => format!("{value} hours"),
+        TimeLevel::Minute if value == 1 => format!("{value} minute"),
+        TimeLevel::Minute => format!("{value} minutes"),
+        TimeLevel::Second if value == 1 => format!("{value} second"),
+        TimeLevel::Second => format!("{value} seconds"),
+    }
 }

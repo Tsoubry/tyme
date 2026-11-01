@@ -5,10 +5,10 @@ use crate::utils::{TimeLevel, to_full_time};
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub values: &'static [usize],
-    pub time_level: TimeLevel,
     pub cb: Callback<Event>,
+    pub time_level: TimeLevel,
     pub value_selected: usize,
+    pub values: &'static [usize],
 }
 
 #[function_component(Selector)]
@@ -27,8 +27,8 @@ pub fn selector(props: &Props) -> Html {
             <div class="control">
                 <div class="select">
                     <select onchange={cb}>
-                        { for values.iter().map(|v| {
-                            html! { <option selected={value_selected == *v} value={to_full_time(*v, time_level)}>{*v}</option> }
+                        { for values.iter().map(|option| {
+                            html! { <option selected={value_selected == *option} value={to_full_time(*option, time_level)}>{*option}</option> }
                         }) }
                     </select>
                 </div>
