@@ -9,7 +9,7 @@ RUN cargo install --locked trunk
 RUN cargo install wasm-bindgen-cli
 
 COPY . .
-RUN trunk build
+RUN trunk build --release
 
 
 FROM docker.io/svenstaro/miniserve:alpine
