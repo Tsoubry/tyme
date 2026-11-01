@@ -1,1 +1,2 @@
 allowed-duplicate-crates = ["syn", "thiserror", "thiserror-impl"]
+suppress-restriction-lint-in-const = true

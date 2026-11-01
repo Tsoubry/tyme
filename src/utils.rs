@@ -4,22 +4,17 @@ use gloo::{console::error, utils as gloo_utils};
 use wasm_bindgen::JsCast as _;
 use web_sys::HtmlMediaElement;
 
-pub const ALL_SECONDS: &[usize] = &[
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-    31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
-];
+pub const ALL_SECONDS: &[usize] = &make_n::<0, 60>();
 pub const ALL_MINUTES: &[usize] = ALL_SECONDS;
-pub const ALL_HOURS: &[usize] = &[
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-];
+pub const ALL_HOURS: &[usize] = &make_n::<0, 24>();
 
 pub const ADD_SECONDS: &[usize] = &[15, 30, 45];
 pub const ADD_MINUTES: &[usize] = &[1, 5, 10, 15, 30, 45];
 pub const ADD_HOURS: &[usize] = &[1, 2];
 
-pub const LINK_MINUTES_1: &[usize] = &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-pub const LINK_MINUTES_2: &[usize] = &[16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
-pub const LINK_HOURS: &[usize] = &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+pub const LINK_MINUTES_1: &[usize] = &make_n::<1, 16>();
+pub const LINK_MINUTES_2: &[usize] = &make_n::<16, 31>();
+pub const LINK_HOURS: &[usize] = &make_n::<1, 11>();
 
 #[derive(Clone, PartialEq, Copy)]
 pub enum TimeLevel {
@@ -36,6 +31,18 @@ impl Display for TimeLevel {
             TimeLevel::Second => write!(formatter, "Seconds"),
         }
     }
+}
+
+const fn make_n<const S: usize, const N: usize>() -> [usize; N] {
+    let mut arr = [S; N];
+    let lower = S;
+    let upper = S + N;
+    let mut i = 0;
+    while (i + lower) < upper {
+        arr[i] = i;
+        i += 1;
+    }
+    arr
 }
 
 fn alarm_element() -> Option<HtmlMediaElement> {
